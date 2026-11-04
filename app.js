@@ -1,8 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("search-btn").addEventListener("click", () => {
-    fetch("superheroes.php")
-      .then(res => res.text())
-      .then(data => alert(data))
-      .catch(err => alert("Error: " + err));
-  });
+  const btn = document.getElementById("search-btn");
+  const input = document.getElementById("search-input");
+  const result = document.getElementById("result");
+
+  function search() {
+    const query = input.value.trim();
+    fetch("superheroes.php?query=" + encodeURIComponent(query))
+      .then(res => {
+        if (!res.ok) throw new Error("Request failed");
+        return res.text();
+      })
+      .then(html => { result.innerHTML = html; })
+      .catch(() => { result.innerHTML = '<p class="error">Something went wrong.</p>'; });
+  }
+
+  btn.addEventListener("click", search);
+  input.addEventListener("keydown", e => { if (e.key === "Enter") search(); });
 });
